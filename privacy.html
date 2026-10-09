@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy &amp; Data — MKBHD Hub</title>
+  <meta name="description" content="Learn what MKBHD Hub stores in your browser, how demo forms work, and how to clear your locally saved data." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <meta name="theme-color" content="#08080a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="MKBHD Hub home">
+        <span class="brand-mark" aria-hidden="true">◉</span>
+        <span>MKBHD Hub<small>Fan-made · Est. 2008</small></span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle navigation">☰</button>
+      <nav class="nav" id="primaryNav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">Story</a>
+        <a href="community.html">Community</a>
+        <a href="privacy.html" aria-current="page">Privacy</a>
+        <a class="btn btn-primary btn-sm btn-nav" href="index.html#newsletter">Join Newsletter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Your data · Plain and simple</span>
+        <h1>Privacy &amp; data</h1>
+        <p>This fan-made site has no analytics or advertising scripts. Here is what the forms and interactive features save, and how you can clear it.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="saved-data-title">
+      <div class="wrap">
+        <div class="panel">
+          <h2 id="saved-data-title">What this site saves</h2>
+          <ul class="check-list">
+            <li><span><strong>Form entries:</strong> The newsletter form saves your name, email, and topic; the fan form saves your name, email, submission type, and message in this browser's local storage. Demo mode is currently active, so these forms do not email or send entries to a server. Entries are not shared with other visitors.</span></li>
+            <li><span><strong>Fan wall:</strong> Your fan submission appears on the community page only in the same browser where it was submitted.</span></li>
+            <li><span><strong>Poll choice:</strong> Your camera-test vote is saved in this browser. The displayed starter tally is a local demonstration, not a live count of visitors.</span></li>
+            <li><span><strong>External services:</strong> The site loads fonts from Google Fonts, images from Unsplash, and an embedded video from YouTube. Those services may receive your browser's request data when their content loads. The site is hosted by Vercel, which may process basic hosting request data.</span></li>
+          </ul>
+          <p>If the site owner later connects an email service, form entries will also be sent to that service. Its own privacy terms will then apply.</p>
+          <button class="btn btn-ghost" id="clearLocalData" type="button">Clear data saved in this browser</button>
+          <p id="localDataStatus" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">◉</span><span>MKBHD Hub</span></a>
+          <p style="margin-top:12px;font-size:.92rem;max-width:32ch">A fan-made tribute to Marques Brownlee. Not affiliated with or endorsed by MKBHD.</p>
+        </div>
+        <div><h4>Explore</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">Story</a></li><li><a href="community.html">Community</a></li><li><a href="index.html#newsletter">Newsletter</a></li></ul></div>
+        <div><h4>Channels</h4><ul><li><a href="https://www.youtube.com/@mkbhd" target="_blank" rel="noopener">MKBHD</a></li><li><a href="https://www.youtube.com/@AutoFocus" target="_blank" rel="noopener">Auto Focus</a></li><li><a href="https://www.youtube.com/@Waveform" target="_blank" rel="noopener">Waveform</a></li><li><a href="https://www.youtube.com/@MKBHDStudio" target="_blank" rel="noopener">Studio</a></li></ul></div>
+        <div><h4>More</h4><ul><li><a href="https://shop.mkbhd.com" target="_blank" rel="noopener">Official shop</a></li><li><a href="https://dbrand.com" target="_blank" rel="noopener">dbrand collabs</a></li><li><a href="community.html#fanform">Submit fan art</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MKBHD Hub (fan project). All creator content belongs to Marques Brownlee.</span>
+        <span><a href="privacy.html" aria-current="page">Privacy &amp; data</a> · Built with plain HTML/CSS/JS</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

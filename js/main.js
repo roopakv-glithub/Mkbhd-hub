@@ -292,6 +292,21 @@
     return fresh;
   }
   function savePoll(p) { try { localStorage.setItem(POLL_KEY, JSON.stringify(p)); } catch (_) {} }
+  (function () {
+    const clearButton = document.getElementById("clearLocalData");
+    const status = document.getElementById("localDataStatus");
+    if (!clearButton || !status) return;
+    clearButton.addEventListener("click", () => {
+      if (!window.confirm("Clear form submissions and your saved poll choice from this browser?")) return;
+      try {
+        localStorage.removeItem("mkbhdhub_submissions");
+        localStorage.removeItem(POLL_KEY);
+        status.textContent = "Your locally saved form entries and poll choice have been cleared.";
+      } catch {
+        status.textContent = "Couldn't clear local data in this browser. Check your browser's site-data settings and try again.";
+      }
+    });
+  })();
   function renderPoll() {
     const root = document.getElementById("blindPoll");
     if (!root) return;
