@@ -35,7 +35,7 @@ npx serve "D:\Santhosh K\mkbhd-site"
 ## Deploy (pick one, ~2 min)
 - **Netlify:** drag the `mkbhd-site` folder onto app.netlify.com/drop → live URL instantly.
 - **Vercel:** `vercel ./mkbhd-site` or import the folder in the dashboard (no build command, output = `.`).
-- **GitHub Pages:** push `mkbhd-site` contents to repo root (or `/docs`), enable Pages → Deploy from branch.
+- **GitHub Pages:** in the repository's **Settings → Pages**, choose **GitHub Actions** as the source. The included workflow deploys the site automatically whenever changes are pushed to `main`.
 
 ## Form backend — does it really submit?
 Yes. Both forms (newsletter + fan submission) POST as JSON and show **loading → success / error** states, with inline field errors, honeypot spam trap, toast confirmation, and a `localStorage` backup (`mkbhdhub_submissions`).
