@@ -12,28 +12,31 @@ Premium, dark-mode, mobile-first fan site. Plain HTML/CSS/JS — zero build step
 | `community.html` | Community | Highlights grid, **blind-test poll**, **fan submission form**, **fan wall** |
 | `privacy.html` | Privacy | Data-use details and a control to clear this browser's saved entries and poll choice |
 
-## Interactive features (no build, no API keys)
+## Interactive features
 - **Smartphone Awards countdown** (Home) — live ticking timer to Dec 18 2026, flips to a "watch now" state after the drop.
 - **Filterable video grid** (Home) — All / Reviews / Auto Focus / Podcast / Extras chips, instant client-side filtering.
 - **Auto latest-upload player** (Home) — YouTube `user_uploads` embed that always shows MKBHD's newest video.
 - **Animated stat counters** (Home) — count up on scroll, respects `prefers-reduced-motion`.
-- **Blind camera-test poll** (Community) — vote Photo A/B, animated result bars, vote persisted + changeable in `localStorage`.
+- **Shared blind camera-test poll** (Community) — server-backed vote totals, with a private browser cookie to change or remove your vote.
 - **Fan wall** (Community) — form submissions appear instantly from the local backup (XSS-escaped rendering).
-- **Local data controls** (Privacy) — see what stays in the browser and clear saved submissions and your poll choice.
+- **Privacy and data controls** (Privacy) — see what is stored and clear this browser's local and server-side entries and vote.
 - **Scroll-reveal animations + back-to-top button** (all pages, progressive enhancement — content visible without JS).
 
 Shared system: `css/styles.css` (tokens, header/footer, buttons, cards, forms), `js/main.js` (nav, toast, forms).
 
 ## Run locally
-No tooling needed — double-click `index.html`, or serve properly (recommended, keeps paths clean):
+The static pages work by opening `index.html` or serving the folder. Server-backed forms and poll require `vercel dev` and a configured Supabase project:
 
 ```powershell
 # Python (any of these)
 python -m http.server 8080 --directory "D:\Santhosh K\mkbhd-site"
 # then open http://localhost:8080
 
-# OR Node
+# OR Node (static pages only)
 npx serve "D:\Santhosh K\mkbhd-site"
+
+# Vercel CLI runs both the static site and API routes locally
+vercel dev
 ```
 
 ## Deploy (pick one, ~2 min)
@@ -41,28 +44,19 @@ npx serve "D:\Santhosh K\mkbhd-site"
 - **Vercel:** deployed at [mkbhd-site.vercel.app](https://mkbhd-site.vercel.app). The connected Vercel project automatically deploys pushes to `main`.
 - **GitHub Pages:** publish the repository root from the `main` branch in the repository's **Settings → Pages**.
 
-## Form backend — does it really submit?
-Both forms (newsletter + fan submission) validate input and show **loading → success / error** states, with inline field errors, a honeypot spam trap, toast confirmation, and a `localStorage` backup (`mkbhdhub_submissions`).
+## Server backend setup (Supabase)
 
-Out of the box the site runs in **demo mode**: submissions are not emailed or POSTed to a server. They are saved only in the submitting browser, and a simulated delay shows the success state. Use the Privacy page to clear locally saved entries. Configure a backend below only if you want real email delivery.
+Vercel API routes store newsletter signups and fan submissions privately in Supabase and serve shared poll totals. Form rows are not publicly readable and are not emailed. Newsletter and submission email delivery is not configured.
 
-To receive real emails (choose one):
+1. Create a Supabase project.
+2. In its SQL Editor, run [`database/schema.sql`](./database/schema.sql) to create the private tables and poll-count function.
+3. In the Supabase project settings, copy the project URL and `service_role` key.
+4. In Vercel, open the `mkbhd-site` project → **Settings → Environment Variables**. Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for **Production** (and Preview if desired). Never put the service-role key in client-side files or commit it to Git.
+5. Redeploy the latest production deployment in Vercel so the functions receive the variables.
 
-**Option A — Formspree (recommended, free):**
-1. Sign up at formspree.io → New Form → copy endpoint `https://formspree.io/f/XXXX`.
-2. In `js/main.js`, set:
-   ```js
-   const BACKEND = { mode: "formspree", endpoint: "https://formspree.io/f/XXXX" };
-   ```
+Until these variables and the schema are configured, server API requests return an explicit error; forms and poll votes do not claim to have succeeded. The site keeps a local form recovery copy. Use the Supabase Table Editor to review private form records. The Privacy page removes this browser's server submissions and vote as well as its local copy.
 
-**Option B — FormSubmit (no signup):**
-1. In `js/main.js`, set:
-   ```js
-   const BACKEND = { mode: "formsubmit", endpoint: "https://formsubmit.co/ajax/you@example.com" };
-   ```
-2. Submit once → click the activation email FormSubmit sends you → future submissions land in your inbox.
-
-Verify: open DevTools → Network → submit the form → confirm the POST → check inbox + `localStorage`.
+The poll uses an HTTP-only random cookie to let a visitor change or remove one vote per browser. Clearing the cookie allows a new browser identity. The database stores a hash of that cookie.
 
 ## Design decisions
 - **Creator: Marques Brownlee (MKBHD).** Chosen for his clean, minimal, quality-first identity — it maps perfectly to a premium dark UI (matte black `#08080a`, signature red `#E8322A`, off-white), unlike louder creator brands.

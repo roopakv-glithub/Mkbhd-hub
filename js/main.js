@@ -2,24 +2,10 @@
    MKBHD Hub — main.js
    - Mobile nav toggle
    - Toast helper
-   - Newsletter + Fan forms: validate → POST to backend → states
-   BACKEND SETUP (2 min, required for real email delivery):
-     1. Go to https://formspree.io → create free form → copy ID.
-        Then set: const BACKEND = { mode: "formspree", id: "YOUR_ID" }
-     OR use FormSubmit (no signup): set mode "formsubmit",
-        email "you@example.com", then activate via the email they send.
-     Until then, DEMO mode stores submissions in localStorage and
-     shows a success state so the site is fully testable offline.
+   - Newsletter + Fan forms: validate → save through the server API → show result
    ============================================================ */
 (function () {
   "use strict";
-
-  const BACKEND = {
-    mode: "demo", // "formspree" | "formsubmit" | "demo"
-    // formspree: "https://formspree.io/f/YOUR_ID",
-    // formsubmit: "https://formsubmit.co/ajax/you@example.com"
-    endpoint: "",
-  };
 
   /* ---------- Mobile nav ---------- */
   const menuBtn = document.getElementById("menuBtn");
@@ -70,28 +56,34 @@
     return !msg;
   }
 
-  /* ---------- Transport: POST to backend, fallback to local demo ---------- */
-  async function deliver(payload) {
-    // Always keep a local backup (proves capture + works offline)
+  /* ---------- Transport: POST to the server and keep a local recovery copy ---------- */
+  function saveLocalCopy(payload, serverSaved) {
     try {
       const key = "mkbhdhub_submissions";
       const prev = JSON.parse(localStorage.getItem(key) || "[]");
-      prev.push({ ...payload, at: new Date().toISOString() });
+      prev.push({ ...payload, serverSaved, at: new Date().toISOString() });
       localStorage.setItem(key, JSON.stringify(prev));
-    } catch (_) { /* private mode — ignore */ }
-
-    if (BACKEND.mode === "demo" || !BACKEND.endpoint) {
-      // Simulate network latency so loading state is visible/testable
-      await new Promise((r) => setTimeout(r, 900));
-      return { ok: true, demo: true };
+      return true;
+    } catch {
+      return false;
     }
-    const res = await fetch(BACKEND.endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ ...payload, _subject: "MKBHD Hub — " + payload.form }),
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return { ok: true, demo: false };
+  }
+
+  async function deliver(payload) {
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      let result = {};
+      try { result = await response.json(); } catch { /* A malformed response is reported below. */ }
+      if (!response.ok) throw new Error(result.error || "The server could not save this entry.");
+      return { locallySaved: saveLocalCopy(payload, true) };
+    } catch (error) {
+      error.locallySaved = saveLocalCopy(payload, false);
+      throw error;
+    }
   }
 
   /* ---------- Generic form wiring ---------- */
@@ -129,21 +121,23 @@
       setStatus(status, "loading", '<span class="spinner" aria-hidden="true"></span><span>Sending… hold tight.</span>');
 
       try {
-        const result = await deliver(cfg.payload());
+        await deliver(cfg.payload());
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalLabel; }
         form.reset();
-        const extra = result.demo
-          ? " <small>(Demo mode — saved on this device. Connect Formspree/FormSubmit for email delivery. See README.)</small>"
-          : "";
+        const extra = " <small>Saved privately on the server. This site does not send newsletter emails or submission updates yet. <a href=\"privacy.html\">Privacy &amp; data</a>.</small>";
         setStatus(status, "success", "<span>✓</span><span><strong>" + cfg.successTitle + "</strong><br>" + cfg.successBody + extra + "</span>");
         showToast(cfg.successTitle);
         // Lets widgets (e.g. fan wall) react to new submissions
         document.dispatchEvent(new CustomEvent("mkbhd:submitted", { detail: cfg.formId }));
         status.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      } catch (err) {
+      } catch (error) {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalLabel; }
-        setStatus(status, "error", "<span>⚠</span><span><strong>Couldn't send just now.</strong> Your entry was saved on this device — please try again in a moment.</span>");
-        showToast("Send failed — please retry.");
+        const reason = error && error.message ? escapeHtml(error.message) : "Please try again in a moment.";
+        const recovery = error && error.locallySaved
+          ? "The server did not accept it; a recovery copy remains in this browser."
+          : "The server did not accept it, and this browser could not save a recovery copy.";
+        setStatus(status, "error", "<span>⚠</span><span><strong>Couldn't save this entry.</strong> " + reason + " " + recovery + "</span>");
+        showToast("Couldn't save the entry — please retry.");
       }
     });
   }
@@ -152,8 +146,8 @@
   wireForm({
     formId: "newsletterForm", statusId: "newsStatus",
     submitId: "nlSubmit", honeyId: "nlHoney",
-    successTitle: "You're in! 🎉",
-    successBody: "Welcome to The Crispy Newsletter — first digest lands Sunday.",
+    successTitle: "Signup saved! 🎉",
+    successBody: "Your newsletter signup is saved. Newsletter email delivery is not set up yet.",
     validate: () => {
       const name = document.getElementById("nlName");
       const email = document.getElementById("nlEmail");
@@ -169,6 +163,8 @@
       name: document.getElementById("nlName").value.trim(),
       email: document.getElementById("nlEmail").value.trim(),
       topic: document.getElementById("nlTopic").value,
+      consent: document.getElementById("nlConsent").checked,
+      honey: document.getElementById("nlHoney").value,
     }),
   });
 
@@ -177,7 +173,7 @@
     formId: "fanForm", statusId: "fanStatus",
     submitId: "fanSubmit", honeyId: "fanHoney",
     successTitle: "Submission received! 🔥",
-    successBody: "Thanks — if you're featured, we'll email you before Sunday.",
+    successBody: "Your creation is saved privately for review. This site does not send submission updates yet.",
     validate: () => {
       const n = document.getElementById("fanName");
       const em = document.getElementById("fanEmail");
@@ -197,6 +193,8 @@
       email: document.getElementById("fanEmail").value.trim(),
       type: document.getElementById("fanType").value,
       message: document.getElementById("fanMsg").value.trim(),
+      consent: document.getElementById("fanConsent").checked,
+      honey: document.getElementById("fanHoney").value,
     }),
   });
 
@@ -283,72 +281,106 @@
 
   /* ---------- Blind camera-test poll ---------- */
   const POLL_KEY = "mkbhdhub_poll";
-  function getPoll() {
-    const fresh = { votes: { A: 1284, B: 1102 }, mine: null }; // starter tally so bars feel alive
-    try {
-      const raw = JSON.parse(localStorage.getItem(POLL_KEY) || "null");
-      if (raw && raw.votes && typeof raw.votes.A === "number" && typeof raw.votes.B === "number") return raw;
-    } catch (_) { /* private mode — use fresh */ }
-    return fresh;
-  }
-  function savePoll(p) { try { localStorage.setItem(POLL_KEY, JSON.stringify(p)); } catch (_) {} }
   (function () {
     const clearButton = document.getElementById("clearLocalData");
     const status = document.getElementById("localDataStatus");
     if (!clearButton || !status) return;
-    clearButton.addEventListener("click", () => {
-      if (!window.confirm("Clear form submissions and your saved poll choice from this browser?")) return;
+    clearButton.addEventListener("click", async () => {
+      if (!window.confirm("Clear this browser's saved entries and remove its server submissions and poll vote?")) return;
+      clearButton.disabled = true;
+      status.textContent = "Clearing saved data…";
       try {
+        const submissionsResponse = await fetch("/api/delete-submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        });
+        const submissionsResult = await submissionsResponse.json();
+        if (!submissionsResponse.ok) throw new Error(submissionsResult.error || "Couldn't remove server submissions.");
+
+        const pollResponse = await fetch("/api/poll", { method: "DELETE" });
+        const pollResult = await pollResponse.json();
+        if (!pollResponse.ok) throw new Error(pollResult.error || "Couldn't remove the server poll vote.");
+
         localStorage.removeItem("mkbhdhub_submissions");
         localStorage.removeItem(POLL_KEY);
-        status.textContent = "Your locally saved form entries and poll choice have been cleared.";
-      } catch {
-        status.textContent = "Couldn't clear local data in this browser. Check your browser's site-data settings and try again.";
+        status.textContent = "Your saved form entries and poll vote have been cleared from this browser and the server.";
+      } catch (error) {
+        status.textContent = (error && error.message ? error.message : "Couldn't clear saved data.") +
+          " Local data was kept; please try again after the server is available.";
+      } finally {
+        clearButton.disabled = false;
       }
     });
   })();
-  function renderPoll() {
+  function renderPoll(poll) {
     const root = document.getElementById("blindPoll");
-    if (!root) return;
-    const p = getPoll();
-    const total = p.votes.A + p.votes.B;
+    if (!root || !poll) return;
+    const total = poll.votes.A + poll.votes.B;
     ["A", "B"].forEach((k) => {
-      const pct = total ? Math.round((p.votes[k] / total) * 100) : 0;
+      const pct = total ? Math.round((poll.votes[k] / total) * 100) : 0;
       const fill = document.getElementById("fill" + k);
       const label = document.getElementById("pct" + k);
       const btn = root.querySelector('[data-vote="' + k + '"]');
       if (fill) fill.style.width = pct + "%";
-      if (label) label.textContent = pct + "% · " + p.votes[k].toLocaleString() + " votes";
+      if (label) label.textContent = pct + "% · " + poll.votes[k].toLocaleString() + " votes";
       if (btn) {
-        btn.classList.toggle("mine", p.mine === k);
-        btn.textContent = p.mine === k ? "✓ Your pick — tap to change" : "Vote " + k;
+        btn.classList.toggle("mine", poll.mine === k);
+        btn.textContent = poll.mine === k ? "✓ Your pick — tap to change" : "Vote " + k;
+        btn.disabled = false;
       }
     });
     const totalEl = document.getElementById("pollTotal");
-    if (totalEl) totalEl.textContent = total.toLocaleString() + " fan votes so far" + (p.mine ? " · you voted " + p.mine : " · tap a button to vote");
+    if (totalEl) totalEl.textContent = total.toLocaleString() + " votes from all visitors" +
+      (poll.mine ? " · you voted " + poll.mine : " · tap a button to vote");
   }
   (function () {
     const root = document.getElementById("blindPoll");
     if (!root) return;
-    root.addEventListener("click", (e) => {
+    const totalEl = document.getElementById("pollTotal");
+    const buttons = root.querySelectorAll("[data-vote]");
+    let currentPoll = null;
+    let pending = false;
+    buttons.forEach((button) => { button.disabled = true; });
+    if (totalEl) totalEl.textContent = "Loading shared poll results…";
+
+    fetch("/api/poll", { cache: "no-store" })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "The shared poll is unavailable.");
+        currentPoll = result;
+        renderPoll(currentPoll);
+      })
+      .catch((error) => {
+        if (totalEl) totalEl.textContent = error.message || "The shared poll is unavailable right now.";
+      });
+
+    root.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-vote]");
-      if (!btn) return;
+      if (!btn || !currentPoll || pending) return;
       const choice = btn.getAttribute("data-vote");
-      const p = getPoll();
-      if (p.mine === choice) {
-        p.votes[choice] = Math.max(0, p.votes[choice] - 1);
-        p.mine = null;
-        showToast("Vote removed.");
-      } else {
-        if (p.mine) p.votes[p.mine] = Math.max(0, p.votes[p.mine] - 1);
-        p.votes[choice] += 1;
-        p.mine = choice;
-        showToast("Voted for Photo " + choice + "! 📸");
+      const nextChoice = currentPoll.mine === choice ? null : choice;
+      pending = true;
+      buttons.forEach((button) => { button.disabled = true; });
+      if (totalEl) totalEl.textContent = "Saving your vote…";
+      try {
+        const response = await fetch("/api/poll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ choice: nextChoice }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "The server couldn't save your vote.");
+        currentPoll = result;
+        renderPoll(currentPoll);
+        showToast(nextChoice ? "Your vote was counted." : "Your vote was removed.");
+      } catch (error) {
+        if (totalEl) totalEl.textContent = error.message || "Couldn't save your vote. Please try again.";
+        buttons.forEach((button) => { button.disabled = false; });
+      } finally {
+        pending = false;
       }
-      savePoll(p);
-      renderPoll();
     });
-    renderPoll();
   })();
 
   /* ---------- Fan wall (renders local fan submissions, XSS-safe) ---------- */
@@ -367,7 +399,8 @@
     }
     wall.innerHTML = fans.map((f) => {
       const when = f.at ? new Date(f.at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
-      return '<article class="fan-item"><span class="tag">' + escapeHtml(f.type || "fan") + "</span><p>" +
+      const label = f.serverSaved === false ? "Pending · " + (f.type || "fan") : (f.type || "fan");
+      return '<article class="fan-item"><span class="tag">' + escapeHtml(label) + "</span><p>" +
         escapeHtml(f.message || "") + '</p><div class="fan-meta"><span><strong>' +
         escapeHtml(f.name || "Anonymous") + "</strong></span><span>" + escapeHtml(when) + "</span></div></article>";
     }).join("");

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy &amp; Data — MKBHD Hub</title>
-  <meta name="description" content="Learn what MKBHD Hub stores in your browser, how demo forms work, and how to clear your locally saved data." />
+  <meta name="description" content="Learn what MKBHD Hub stores in your browser and on its server, and how to clear your saved data." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <meta name="theme-color" content="#08080a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -45,13 +45,14 @@
         <div class="panel">
           <h2 id="saved-data-title">What this site saves</h2>
           <ul class="check-list">
-            <li><span><strong>Form entries:</strong> The newsletter form saves your name, email, and topic; the fan form saves your name, email, submission type, and message in this browser's local storage. Demo mode is currently active, so these forms do not email or send entries to a server. Entries are not shared with other visitors.</span></li>
-            <li><span><strong>Fan wall:</strong> Your fan submission appears on the community page only in the same browser where it was submitted.</span></li>
-            <li><span><strong>Poll choice:</strong> Your camera-test vote is saved in this browser. The displayed starter tally is a local demonstration, not a live count of visitors.</span></li>
-            <li><span><strong>External services:</strong> The site loads fonts from Google Fonts, images from Unsplash, and an embedded video from YouTube. Those services may receive your browser's request data when their content loads. The site is hosted by Vercel, which may process basic hosting request data.</span></li>
+            <li><span><strong>Form entries:</strong> With server storage configured, the newsletter form sends your name, email, topic, and consent; the fan form sends your name, email, submission type, message, and consent to a private Supabase database. They are not emailed or publicly displayed. A local recovery copy is also kept in this browser.</span></li>
+            <li><span><strong>Shared poll:</strong> Vote totals are stored on the server and shared across visitors. A random, HTTP-only browser cookie lets you change or remove your vote. The database stores a hash of that cookie, not its value.</span></li>
+            <li><span><strong>Fan wall:</strong> The wall still displays only entries saved in this browser; submissions aren't automatically published to other visitors.</span></li>
+            <li><span><strong>Clear data:</strong> The button below removes this browser's locally saved entries and, while its browser cookie is available, its server submissions and poll vote. Clearing cookies first prevents the site from identifying which server entries belong to this browser.</span></li>
+            <li><span><strong>External services:</strong> The site loads fonts from Google Fonts, images from Unsplash, and an embedded video from YouTube. Those services may receive your browser's request data when their content loads. Vercel hosts the site/API and Supabase stores server entries; each may process service request data.</span></li>
           </ul>
-          <p>If the site owner later connects an email service, form entries will also be sent to that service. Its own privacy terms will then apply.</p>
-          <button class="btn btn-ghost" id="clearLocalData" type="button">Clear data saved in this browser</button>
+          <p>Newsletter emails and submission updates are not sent because no email delivery service is configured. Newsletter signups and fan submissions can only be stored when the server database has been configured.</p>
+          <button class="btn btn-ghost" id="clearLocalData" type="button">Clear this browser's data and server entries</button>
           <p id="localDataStatus" role="status" aria-live="polite"></p>
         </div>
       </div>

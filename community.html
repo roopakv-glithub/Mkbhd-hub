@@ -38,7 +38,7 @@
       <div class="wrap">
         <span class="eyebrow">Community · Fan Zone</span>
         <h1>The crispiest community in tech.</h1>
-        <p>Setup showcases, blind camera-test debates, and fan creations — plus a form to get your own work featured in the newsletter.</p>
+        <p>Setup showcases, blind camera-test debates, and fan creations — with shared server-backed poll results.</p>
       </div>
     </section>
 
@@ -73,7 +73,7 @@
         <div class="panel">
           <span class="eyebrow">Interactive · Blind test</span>
           <h2 id="poll-title">Which shot wins? You decide.</h2>
-          <p>A mini tribute to MKBHD's legendary blind camera tests. Study both shots, pick a winner — results update live and your vote is saved on this device.</p>
+          <p>A mini tribute to MKBHD's legendary blind camera tests. Study both shots and vote — server-backed results are shared across visitors, and this browser can change its vote.</p>
           <div class="poll" id="blindPoll">
             <div class="poll-opt">
               <img loading="lazy" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=65&auto=format&fit=crop" alt="Candidate photo A: smartphone held up against a bright sky" />
@@ -106,7 +106,7 @@
           <div class="form-copy">
             <span class="eyebrow">Get featured</span>
             <h2 id="fan-title">Submit your fan creation</h2>
-            <p>Setups, posters, memes (tasteful ones), review parodies — best submissions get featured in the Sunday newsletter with full credit.</p>
+            <p>Setups, posters, memes (tasteful ones), review parodies — submissions are stored privately for review. This site does not send review updates yet.</p>
             <ul>
               <li><i>◉</i> Credit + link back, always</li>
               <li><i>◉</i> Family-friendly only, please</li>
@@ -142,9 +142,13 @@
                 <textarea id="fanMsg" name="message" placeholder="What did you make? Drop an Imgur / Drive / YouTube link…" required minlength="10"></textarea>
                 <div class="field-error" id="fanMsgErr"></div>
               </div>
+              <div class="field consent">
+                <input type="checkbox" id="fanConsent" required />
+                <label for="fanConsent" style="margin:0;font-weight:400">I agree to store these details for fan-submission review. (Required)</label>
+              </div>
               <input type="text" name="_honey" id="fanHoney" style="display:none" tabindex="-1" autocomplete="off" />
               <button class="btn btn-primary btn-lg" type="submit" id="fanSubmit" style="width:100%">Submit for feature</button>
-              <p class="form-note">Demo mode: entries aren't emailed; your details are saved only in this browser. <a href="privacy.html">Privacy &amp; data</a>.</p>
+              <p class="form-note">Stored privately on the server; not emailed or shown to other visitors. <a href="privacy.html">Privacy &amp; data</a>.</p>
             </form>
           </div>
         </div>
