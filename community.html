@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community — MKBHD Hub | Fan Zone &amp; Submissions</title>
+  <meta name="description" content="Join the MKBHD fan zone: community highlights, setup showcases, and the fan submission form." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Community — MKBHD Hub Fan Zone" />
+  <meta property="og:description" content="Share your setup, vote in polls, get featured. The fan zone for MKBHD lovers." />
+  <meta name="theme-color" content="#08080a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="MKBHD Hub home">
+        <span class="brand-mark" aria-hidden="true">◉</span>
+        <span>MKBHD Hub<small>Fan-made · Est. 2008</small></span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle navigation">☰</button>
+      <nav class="nav" id="primaryNav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">Story</a>
+        <a href="community.html" aria-current="page">Community</a>
+        <a class="btn btn-primary btn-sm btn-nav" href="index.html#newsletter">Join Newsletter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Community · Fan Zone</span>
+        <h1>The crispiest community in tech.</h1>
+        <p>Setup showcases, blind camera-test debates, and fan creations — plus a form to get your own work featured in the newsletter.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="highlights">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">This week</span>
+            <h2 id="highlights">Community highlights</h2>
+          </div>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <img class="card-img" loading="lazy" src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=800&q=65&auto=format&fit=crop" alt="Clean desk setup with monitor and keyboard" />
+            <div class="card-body"><span class="tag">Setup Saturday</span><h3>Desk of the week: "Stealth Studio"</h3><p>All-black everything, cable-free desk, Pixel + MacBook combo. 2.4k votes.</p></div>
+          </article>
+          <article class="card">
+            <img class="card-img" loading="lazy" src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=65&auto=format&fit=crop" alt="Camera lens close-up" />
+            <div class="card-body"><span class="tag">Blind test</span><h3>Fans nailed the camera vote</h3><p>68% picked Phone C in our mock blind test — same upset as the real awards.</p></div>
+          </article>
+          <article class="card">
+            <img class="card-img" loading="lazy" src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&q=65&auto=format&fit=crop" alt="Vintage camera on a table" />
+            <div class="card-body"><span class="tag">Fan art</span><h3>Matte-black poster drop</h3><p>@desk.exe's minimal MKBHD poster series got featured on the Discord wall.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLIND CAMERA-TEST POLL -->
+    <section class="section" style="padding-top:0" aria-labelledby="poll-title">
+      <div class="wrap">
+        <div class="panel">
+          <span class="eyebrow">Interactive · Blind test</span>
+          <h2 id="poll-title">Which shot wins? You decide.</h2>
+          <p>A mini tribute to MKBHD's legendary blind camera tests. Study both shots, pick a winner — results update live and your vote is saved on this device.</p>
+          <div class="poll" id="blindPoll">
+            <div class="poll-opt">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=65&auto=format&fit=crop" alt="Candidate photo A: smartphone held up against a bright sky" />
+              <div class="poll-info">
+                <b>Photo A</b>
+                <div class="poll-bar" aria-hidden="true"><div class="poll-fill" id="fillA"></div></div>
+                <span class="poll-pct" id="pctA"></span>
+                <button class="btn btn-ghost btn-sm vote-btn" data-vote="A" type="button">Vote A</button>
+              </div>
+            </div>
+            <div class="poll-opt">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=65&auto=format&fit=crop" alt="Candidate photo B: person using a smartphone outdoors" />
+              <div class="poll-info">
+                <b>Photo B</b>
+                <div class="poll-bar" aria-hidden="true"><div class="poll-fill" id="fillB"></div></div>
+                <span class="poll-pct" id="pctB"></span>
+                <button class="btn btn-ghost btn-sm vote-btn" data-vote="B" type="button">Vote B</button>
+              </div>
+            </div>
+          </div>
+          <p class="form-note" id="pollTotal"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAN SUBMISSION FORM -->
+    <section class="section" id="fanform" style="padding-top:0" aria-labelledby="fan-title">
+      <div class="wrap">
+        <div class="panel form-panel">
+          <div class="form-copy">
+            <span class="eyebrow">Get featured</span>
+            <h2 id="fan-title">Submit your fan creation</h2>
+            <p>Setups, posters, memes (tasteful ones), review parodies — best submissions get featured in the Sunday newsletter with full credit.</p>
+            <ul>
+              <li><i>◉</i> Credit + link back, always</li>
+              <li><i>◉</i> Family-friendly only, please</li>
+              <li><i>◉</i> Replies within ~3 days</li>
+            </ul>
+          </div>
+          <div class="form-side">
+            <div class="form-status" id="fanStatus" role="status" aria-live="polite"></div>
+            <form id="fanForm" novalidate>
+              <div class="field-row">
+                <div class="field">
+                  <label for="fanName">Your name / handle</label>
+                  <input type="text" id="fanName" name="name" placeholder="@yourhandle" autocomplete="nickname" required minlength="2" />
+                  <div class="field-error" id="fanNameErr"></div>
+                </div>
+                <div class="field">
+                  <label for="fanEmail">Email</label>
+                  <input type="email" id="fanEmail" name="email" placeholder="you@email.com" autocomplete="email" required />
+                  <div class="field-error" id="fanEmailErr"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="fanType">Submission type</label>
+                <select id="fanType" name="type">
+                  <option value="setup">Desk / setup photo story</option>
+                  <option value="art">Poster / artwork</option>
+                  <option value="video">Video / parody link</option>
+                  <option value="other">Something else crispy</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fanMsg">Tell us about it + paste your link</label>
+                <textarea id="fanMsg" name="message" placeholder="What did you make? Drop an Imgur / Drive / YouTube link…" required minlength="10"></textarea>
+                <div class="field-error" id="fanMsgErr"></div>
+              </div>
+              <input type="text" name="_honey" id="fanHoney" style="display:none" tabindex="-1" autocomplete="off" />
+              <button class="btn btn-primary btn-lg" type="submit" id="fanSubmit" style="width:100%">Submit for feature</button>
+              <p class="form-note">Same backend as the newsletter — goes straight to the inbox, with local backup.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAN WALL -->
+    <section class="section" style="padding-top:0" aria-labelledby="wall-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Fresh off the form</span>
+            <h2 id="wall-title">Fan wall</h2>
+            <p>Latest creations submitted through the form above — appearing here instantly via this device's local backup.</p>
+          </div>
+        </div>
+        <div class="fan-wall" id="fanWall"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">◉</span><span>MKBHD Hub</span></a>
+          <p style="margin-top:12px;font-size:.92rem;max-width:32ch">A fan-made tribute to Marques Brownlee. Not affiliated with or endorsed by MKBHD.</p>
+          <div class="socials">
+            <a href="https://www.youtube.com/@mkbhd" target="_blank" rel="noopener" aria-label="MKBHD on YouTube">▶</a>
+            <a href="https://x.com/MKBHD" target="_blank" rel="noopener" aria-label="MKBHD on X (Twitter)">𝕏</a>
+            <a href="https://www.instagram.com/mkbhd" target="_blank" rel="noopener" aria-label="MKBHD on Instagram">◈</a>
+            <a href="https://www.threads.net/@mkbhd" target="_blank" rel="noopener" aria-label="MKBHD on Threads">@</a>
+          </div>
+        </div>
+        <div><h4>Explore</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">Story</a></li><li><a href="community.html">Community</a></li><li><a href="index.html#newsletter">Newsletter</a></li></ul></div>
+        <div><h4>Channels</h4><ul><li><a href="https://www.youtube.com/@mkbhd" target="_blank" rel="noopener">MKBHD</a></li><li><a href="https://www.youtube.com/@AutoFocus" target="_blank" rel="noopener">Auto Focus</a></li><li><a href="https://www.youtube.com/@Waveform" target="_blank" rel="noopener">Waveform</a></li><li><a href="https://www.youtube.com/@MKBHDStudio" target="_blank" rel="noopener">Studio</a></li></ul></div>
+        <div><h4>More</h4><ul><li><a href="https://shop.mkbhd.com" target="_blank" rel="noopener">Official shop</a></li><li><a href="https://dbrand.com" target="_blank" rel="noopener">dbrand collabs</a></li><li><a href="#fanform">Submit fan art</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MKBHD Hub (fan project). All creator content belongs to Marques Brownlee.</span>
+        <span><a href="index.html">Privacy-friendly</a> · Built with plain HTML/CSS/JS</span>
+      </div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
